@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Housley for Aria — Live AI Leasing Assistant</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1c1f26;
+    --ink-soft:#5a6270;
+    --paper:#faf7f2;
+    --card:#ffffff;
+    --line:#e9e2d6;
+    --accent:#c2703f;
+    --accent-dark:#96502a;
+    --accent-soft:#f3e3d3;
+    --green:#3f7a52;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    font-family:'Inter',-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+    background:var(--paper);
+    color:var(--ink);
+    line-height:1.6;
+  }
+  h1,h2,.brand{font-family:'Fraunces',Georgia,serif;}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 20px;}
+
+  /* ---------- Hero ---------- */
+  header.hero{
+    position:relative;
+    min-height:78vh;
+    display:flex;
+    align-items:flex-end;
+    color:#fff;
+    background:
+      linear-gradient(180deg,rgba(20,16,12,.35) 0%,rgba(18,14,11,.55) 45%,rgba(15,12,9,.92) 100%),
+      url('https://assets.rentsync.com/diverse/images/gallery/1152/1781812501526_Bld_1_only__with_text__5K_FINAL.jpg') center/cover no-repeat;
+    padding:100px 0 40px;
+  }
+  .brand{
+    position:absolute;top:20px;left:20px;
+    font-size:15px;font-weight:600;letter-spacing:.02em;color:#fff;
+    display:flex;align-items:center;gap:8px;
+  }
+  .brand .dotmark{width:9px;height:9px;border-radius:50%;background:#6bd08a;}
+  .eyebrow{
+    text-transform:uppercase;
+    letter-spacing:.14em;
+    font-size:12px;
+    color:#f0c896;
+    font-weight:700;
+    margin-bottom:16px;
+  }
+  .glimpse-note{
+    font-size:14px;font-weight:600;color:#f0c896;
+    margin:0 0 14px;
+    padding-left:14px;border-left:2px solid #f0c896;
+  }
+  h1{font-size:clamp(30px,6.5vw,50px);margin:0 0 16px;line-height:1.1;font-weight:600;}
+  .hero p.sub{font-size:17px;color:#ece5da;max-width:620px;margin:0 0 26px;}
+  .hero-meta{display:flex;flex-wrap:wrap;gap:9px;margin-bottom:6px;}
+  .pill{
+    background:rgba(255,255,255,.10);
+    backdrop-filter:blur(4px);
+    border:1px solid rgba(255,255,255,.25);
+    padding:7px 14px;
+    border-radius:999px;
+    font-size:12.5px;
+    color:#fff;
+    font-weight:500;
+  }
+  .scrolldown{
+    display:inline-flex;align-items:center;gap:8px;margin-top:30px;
+    color:#f0c896;font-size:13px;font-weight:600;text-decoration:none;
+  }
+  .scrolldown svg{animation:bounce 1.6s infinite;}
+  @keyframes bounce{0%,100%{transform:translateY(0);}50%{transform:translateY(5px);}}
+
+  section{padding:56px 0;border-bottom:1px solid var(--line);}
+  section.dark{background:#171310;color:#f3efe8;border-bottom:none;}
+  section.dark h2{color:#fff;}
+  section.dark .section-note{color:#cfc4b3;}
+  h2{font-size:clamp(22px,4vw,30px);margin:0 0 10px;font-weight:600;}
+  .section-note{color:var(--ink-soft);font-size:15px;margin:0 0 28px;max-width:640px;}
+
+  /* ---------- Chat widget ---------- */
+  .demo-panel{display:grid;grid-template-columns:1fr;gap:20px;}
+  .chat-card{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:18px;
+    overflow:hidden;
+    box-shadow:0 16px 40px rgba(28,31,38,.10);
+  }
+  .chat-head{
+    background:linear-gradient(120deg,var(--accent),var(--accent-dark));
+    color:#fff;
+    padding:16px 20px;
+    display:flex;
+    align-items:center;
+    gap:12px;
+  }
+  .chat-head .dot{width:9px;height:9px;border-radius:50%;background:#6bd08a;box-shadow:0 0 0 3px rgba(255,255,255,.25);}
+  .chat-head strong{font-size:15px;}
+  .chat-head span{display:block;font-size:12px;opacity:.9;}
+  #chatlog{
+    height:min(380px,52vh);
+    overflow-y:auto;
+    padding:18px 20px;
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+    background:#fdfbf8;
+  }
+  .msg{max-width:85%;padding:10px 14px;border-radius:14px;font-size:14.5px;}
+  .msg.bot{background:#fff;border:1px solid var(--line);align-self:flex-start;border-bottom-left-radius:4px;}
+  .msg.user{background:var(--accent);color:#fff;align-self:flex-end;border-bottom-right-radius:4px;}
+  .suggest-row{display:flex;flex-wrap:wrap;gap:8px;padding:0 20px 14px;background:#fdfbf8;}
+  .suggest{
+    background:#fff;border:1px solid var(--line);color:var(--ink);
+    font-size:12.5px;padding:7px 12px;border-radius:999px;cursor:pointer;
+  }
+  .suggest:hover{border-color:var(--accent);color:var(--accent-dark);}
+  .chat-input{display:flex;border-top:1px solid var(--line);}
+  .chat-input input{
+    flex:1;border:none;padding:15px 16px;font-size:16px;outline:none;font-family:inherit;min-width:0;
+  }
+  .chat-input button{
+    border:none;background:var(--accent);color:#fff;padding:0 22px;font-size:14px;font-weight:600;cursor:pointer;
+  }
+  .chat-input button:hover{background:var(--accent-dark);}
+
+  /* ---------- Lead capture ---------- */
+  .lead-form{
+    border-top:1px solid var(--line);
+    padding:18px 20px 20px;
+    background:#fdfbf8;
+  }
+  .lead-form.hidden{display:none;}
+  .lead-form h4{margin:0 0 4px;font-size:14.5px;font-weight:600;}
+  .lead-form p{margin:0 0 14px;font-size:12.5px;color:var(--ink-soft);}
+  .lead-form .row{display:flex;flex-direction:column;gap:10px;}
+  .lead-form label{font-size:12.5px;font-weight:600;color:var(--ink);display:block;margin-bottom:4px;}
+  .lead-form input, .lead-form select{
+    width:100%;border:1px solid var(--line);border-radius:8px;
+    padding:10px 12px;font-size:15px;font-family:inherit;background:#fff;color:var(--ink);
+  }
+  .lead-form input:focus, .lead-form select:focus{outline:2px solid var(--accent-soft);border-color:var(--accent);}
+  .lead-form-actions{display:flex;gap:10px;margin-top:14px;}
+  .lead-form-actions button{
+    border:none;border-radius:8px;padding:11px 18px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;
+  }
+  .lead-form-actions .submit-btn{background:var(--accent);color:#fff;flex:1;}
+  .lead-form-actions .submit-btn:hover{background:var(--accent-dark);}
+  .lead-form-actions .cancel-btn{background:transparent;color:var(--ink-soft);border:1px solid var(--line);}
+  .lead-form-note{font-size:11px;color:#9a9488;margin-top:10px;}
+
+  /* ---------- Stats ---------- */
+  .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+  @media(max-width:720px){.grid-3{grid-template-columns:1fr;}}
+  .stat-card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px;}
+  .stat-card .num{font-family:'Fraunces',serif;font-size:32px;font-weight:600;color:var(--accent-dark);}
+  .stat-card .label{font-size:13.5px;color:var(--ink-soft);margin-top:4px;}
+  .stat-note{font-size:12px;color:#9a9488;margin-top:22px;}
+
+  /* ---------- Gallery ---------- */
+  .gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+  .gallery a.tile{position:relative;display:block;border-radius:14px;overflow:hidden;aspect-ratio:4/3;}
+  .gallery a.tile:nth-child(1){grid-column:span 2;grid-row:span 2;aspect-ratio:8/7;}
+  .gallery img{display:block;width:100%;height:100%;object-fit:cover;transition:transform .4s ease;}
+  .gallery a.tile:hover img{transform:scale(1.06);}
+  .gallery figcaption{
+    position:absolute;left:0;right:0;bottom:0;
+    padding:14px 16px;font-size:13px;color:#fff;font-weight:600;
+    background:linear-gradient(0deg,rgba(0,0,0,.62),rgba(0,0,0,0));
+  }
+  @media(max-width:640px){
+    .gallery{grid-template-columns:repeat(2,1fr);}
+    .gallery a.tile:nth-child(1){grid-column:span 2;aspect-ratio:16/10;}
+  }
+
+  /* ---------- Q&A ---------- */
+  .qa{border-top:1px solid var(--line);padding:16px 0;}
+  .qa:first-child{border-top:none;}
+  .qa dt{font-weight:600;margin-bottom:6px;}
+  .qa dd{margin:0;color:var(--ink-soft);font-size:14.5px;}
+
+  /* ---------- CTA ---------- */
+  .cta{
+    position:relative;
+    text-align:center;
+    background:
+      linear-gradient(180deg,rgba(20,16,12,.80),rgba(15,12,9,.94)),
+      url('https://assets.rentsync.com/diverse/images/gallery/full/1781831869_listingImages.jpg') center/cover no-repeat;
+    padding:72px 0;
+  }
+  .cta h2{color:#fff;}
+  .cta p{color:#dcd2c2;max-width:520px;margin:0 auto 26px;}
+  .btn{
+    display:inline-block;background:var(--accent);color:#fff;text-decoration:none;
+    padding:14px 26px;border-radius:8px;font-weight:600;font-size:15px;margin:0 6px 12px;
+  }
+  .btn:hover{background:var(--accent-dark);}
+  .btn.secondary{background:transparent;border:1px solid rgba(255,255,255,.4);color:#fff;}
+  .btn.secondary:hover{background:rgba(255,255,255,.1);}
+
+  footer{padding:26px 0;text-align:center;color:var(--ink-soft);font-size:13px;background:var(--paper);}
+
+  @media(max-width:640px){
+    section{padding:40px 0;}
+    header.hero{padding:80px 0 32px;min-height:64vh;}
+    .btn{display:block;margin:0 auto 12px;max-width:280px;}
+    .glimpse-note{font-size:13px;}
+    .lead-form .row{gap:12px;}
+    #chatlog{height:min(320px,50vh);}
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="brand"><span class="dotmark"></span>Housley</div>
+  <div class="wrap">
+    <div class="eyebrow">Built for Diverse Properties — Aria, Abbotsford</div>
+    <p class="glimpse-note">This is just a glimpse — try it, then let's make it 10x better for Aria.</p>
+    <h1>Meet Housley — Aria's AI leasing assistant, live in 2 minutes</h1>
+    <p class="sub">Aria opens pre-leasing this month with move-ins targeted for January 2027. Before the leasing office is fully staffed for the lease-up rush, Housley can already answer every prospect question about Aria, 24/7 — try it live below.</p>
+    <div class="hero-meta">
+      <span class="pill">📍 33538 Cottage Lane, Abbotsford BC</span>
+      <span class="pill">🏢 Studio – 2 Bed + Den</span>
+      <span class="pill">🗓️ Move-ins target Jan 2027</span>
+      <span class="pill">🔑 Purpose-built rental</span>
+    </div>
+    <a class="scrolldown" href="#demo">
+      Try the live demo
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
+    </a>
+  </div>
+</header>
+
+<section id="demo">
+  <div class="wrap">
+    <h2>Try the live demo</h2>
+    <p class="section-note">This is Housley, already loaded with Aria's real details — address, unit mix, finishes, and timeline. Ask it anything a prospective renter would ask.</p>
+    <div class="demo-panel">
+      <div class="chat-card">
+        <div class="chat-head">
+          <div class="dot"></div>
+          <div>
+            <strong>Housley — Aria Leasing Assistant</strong>
+            <span>Online now · typically replies instantly</span>
+          </div>
+        </div>
+        <div id="chatlog"></div>
+        <div class="suggest-row">
+          <button class="suggest" data-q="When can I move in?">When can I move in?</button>
+          <button class="suggest" data-q="What unit types do you have?">Unit types?</button>
+          <button class="suggest" data-q="Do units have air conditioning?">Air conditioning?</button>
+          <button class="suggest" data-q="How do I get on the waitlist?">Join the waitlist</button>
+        </div>
+        <form class="chat-input" id="chatform">
+          <input id="chatinput" type="text" placeholder="Ask about Aria — pricing, move-in date, pets, amenities…" autocomplete="off">
+          <button type="submit">Send</button>
+        </form>
+        <div class="lead-form hidden" id="leadform-wrap">
+          <h4>Join the priority waitlist</h4>
+          <p>Share a few details and the Diverse Properties team will follow up as pricing and availability are finalized.</p>
+          <form id="leadform">
+            <div class="row">
+              <div>
+                <label for="lead-name">Name</label>
+                <input id="lead-name" name="name" type="text" placeholder="Your full name" autocomplete="name" required>
+              </div>
+              <div>
+                <label for="lead-email">Email</label>
+                <input id="lead-email" name="email" type="email" placeholder="you@example.com" autocomplete="email" required>
+              </div>
+              <div>
+                <label for="lead-phone">Phone number</label>
+                <input id="lead-phone" name="phone" type="tel" placeholder="(604) 555-0123" autocomplete="tel" required>
+              </div>
+              <div>
+                <label for="lead-unit">Type of unit</label>
+                <select id="lead-unit" name="unit_type" required>
+                  <option value="" disabled selected>Select a unit type</option>
+                  <option value="Studio">Studio</option>
+                  <option value="1 Bedroom">1 Bedroom</option>
+                  <option value="2 Bedroom">2 Bedroom</option>
+                  <option value="2 Bedroom + Den">2 Bedroom + Den</option>
+                  <option value="Not sure yet">Not sure yet</option>
+                </select>
+              </div>
+            </div>
+            <div class="lead-form-actions">
+              <button type="submit" class="submit-btn">Join waitlist</button>
+              <button type="button" class="cancel-btn" id="lead-cancel">Cancel</button>
+            </div>
+          </form>
+          <p class="lead-form-note">Sent directly to the Aria leasing team. No spam, ever.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="dark">
+  <div class="wrap">
+    <h2>The problem it solves</h2>
+    <p class="section-note">Aria is entering the busiest and most unpredictable phase of a rental building's life — lease-up — with the leanest team and the least infrastructure it will ever have. Most prospect questions come in evenings and weekends, exactly when no one from Diverse Properties is available to answer.</p>
+    <div class="grid-3">
+      <div class="stat-card">
+        <div class="num">165</div>
+        <div class="label">units across Aria's two buildings to fill before/around move-in</div>
+      </div>
+      <div class="stat-card">
+        <div class="num">24/7</div>
+        <div class="label">instant answers on pricing, floor plans, pet policy, and tour booking</div>
+      </div>
+      <div class="stat-card">
+        <div class="num">0</div>
+        <div class="label">setup work required from your team — I handle deployment, testing, and maintenance</div>
+      </div>
+    </div>
+    <p class="stat-note">Illustrative figures based on Aria's publicly listed unit count and lease-up timeline — happy to refine with your actual absorption targets.</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Inside Aria</h2>
+    <p class="section-note">The look and feel Housley describes to every prospect who asks about layouts, finishes, and life at Aria.</p>
+    <div class="gallery">
+      <a class="tile" href="https://assets.rentsync.com/diverse/images/gallery/1152/1781812501526_Bld_1_only__with_text__5K_FINAL.jpg" target="_blank" rel="noopener">
+        <img src="https://assets.rentsync.com/diverse/images/gallery/1152/1781812501526_Bld_1_only__with_text__5K_FINAL.jpg" alt="Aria building rendering" loading="lazy">
+        <figcaption>Aria — official building rendering</figcaption>
+      </a>
+      <a class="tile" href="https://assets.rentsync.com/diverse/images/gallery/full/1781812411504_Aria_Studio_Appliances.jpg" target="_blank" rel="noopener">
+        <img src="https://assets.rentsync.com/diverse/images/gallery/full/1781812411504_Aria_Studio_Appliances.jpg" alt="Aria studio appliances" loading="lazy">
+        <figcaption>Studio kitchen &amp; appliances</figcaption>
+      </a>
+      <a class="tile" href="https://assets.rentsync.com/diverse/images/gallery/full/1781831873_listingImages.jpg" target="_blank" rel="noopener">
+        <img src="https://assets.rentsync.com/diverse/images/gallery/full/1781831873_listingImages.jpg" alt="Aria listing photo" loading="lazy">
+        <figcaption>Aria — from the official listing</figcaption>
+      </a>
+      <a class="tile" href="https://assets.rentsync.com/diverse/images/gallery/full/1781831876_listingImages.jpg" target="_blank" rel="noopener">
+        <img src="https://assets.rentsync.com/diverse/images/gallery/full/1781831876_listingImages.jpg" alt="Aria listing photo" loading="lazy">
+        <figcaption>Aria — from the official listing</figcaption>
+      </a>
+      <a class="tile" href="https://assets.rentsync.com/diverse/images/gallery/full/1781831880_listingImages.jpg" target="_blank" rel="noopener">
+        <img src="https://assets.rentsync.com/diverse/images/gallery/full/1781831880_listingImages.jpg" alt="Aria listing photo" loading="lazy">
+        <figcaption>Aria — from the official listing</figcaption>
+      </a>
+      <a class="tile" href="https://assets.rentsync.com/diverse/images/gallery/full/1781831884_listingImages.jpg" target="_blank" rel="noopener">
+        <img src="https://assets.rentsync.com/diverse/images/gallery/full/1781831884_listingImages.jpg" alt="Aria listing photo" loading="lazy">
+        <figcaption>Aria — from the official listing</figcaption>
+      </a>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Common questions</h2>
+    <dl>
+      <div class="qa">
+        <dt>Is this really live, or a mockup?</dt>
+        <dd>It's live — the chat above is Housley running today, already trained on Aria's details. Nothing here needs to be built from scratch.</dd>
+      </div>
+      <div class="qa">
+        <dt>What does it take from your team to launch?</dt>
+        <dd>Nothing beyond confirming pricing and policies as they're finalized. I handle setup, testing, and ongoing maintenance directly.</dd>
+      </div>
+      <div class="qa">
+        <dt>Can it update as Aria's pricing and availability change?</dt>
+        <dd>Yes — Housley pulls from a single source of information that's easy to keep current as pre-leasing progresses toward the January 2027 move-in.</dd>
+      </div>
+    </dl>
+  </div>
+</section>
+
+<section class="cta">
+  <div class="wrap">
+    <h2>Worth 15 minutes?</h2>
+    <p>If this looks like a fit for Aria's lease-up, grab a short call and I'll walk through pricing and next steps.</p>
+    <a class="btn" href="https://calendly.com/navid-swifttechsupport/housley-for-aria-quick-intro">Book a 15-minute intro</a>
+    <a class="btn secondary" href="mailto:navid@swifttechsupport.ca">Email Navid</a>
+  </div>
+</section>
+
+<footer>
+  Navid · 778-244-4356 · navid@swifttechsupport.ca
+</footer>
+
+<!-- Hidden Netlify form: submitted once per visitor when they send their first chat message, so a "chat started" notification can be emailed. -->
+<form name="chat-started" data-netlify="true" netlify-honeypot="bot-field" hidden>
+  <input type="hidden" name="form-name" value="chat-started">
+  <input type="text" name="bot-field" style="display:none">
+  <input type="text" name="first_message">
+  <input type="text" name="page">
+  <input type="text" name="timestamp">
+</form>
+
+<!-- Hidden Netlify form: mirrors the visible lead-capture form in the chat widget, so Netlify can detect its fields at build time and email a notification on each real submission. -->
+<form name="aria-lead" data-netlify="true" netlify-honeypot="bot-field" hidden>
+  <input type="hidden" name="form-name" value="aria-lead">
+  <input type="text" name="bot-field" style="display:none">
+  <input type="text" name="name">
+  <input type="email" name="email">
+  <input type="tel" name="phone">
+  <select name="unit_type">
+    <option value="Studio">Studio</option>
+    <option value="1 Bedroom">1 Bedroom</option>
+    <option value="2 Bedroom">2 Bedroom</option>
+    <option value="2 Bedroom + Den">2 Bedroom + Den</option>
+    <option value="Not sure yet">Not sure yet</option>
+  </select>
+  <input type="text" name="page">
+  <input type="text" name="timestamp">
+</form>
+
+<script>
+const log = document.getElementById('chatlog');
+const form = document.getElementById('chatform');
+const input = document.getElementById('chatinput');
+const leadWrap = document.getElementById('leadform-wrap');
+const leadForm = document.getElementById('leadform');
+const leadCancel = document.getElementById('lead-cancel');
+
+let chatStartNotified = false;
+function notifyChatStarted(firstMessage){
+  if(chatStartNotified) return;
+  chatStartNotified = true;
+  const body = new URLSearchParams({
+    'form-name': 'chat-started',
+    'first_message': firstMessage,
+    'page': window.location.href,
+    'timestamp': new Date().toISOString()
+  });
+  fetch('/', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: body.toString()
+  }).catch(() => { /* fail silently — never block the chat UI on this */ });
+
+  fetch('/.netlify/functions/notify-email', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      subject: 'Aria: someone just started a chat with Housley',
+      text: `A visitor started a chat on the Aria demo.\n\nFirst message: ${firstMessage}\nPage: ${window.location.href}\nTime: ${new Date().toString()}`
+    })
+  }).catch(() => { /* fail silently — never block the chat UI on this */ });
+}
+
+const KB = [
+  { k: ['move in','move-in','when can i move','date','ready'],
+    a: "Move-ins at Aria are targeted for January 2027, with tours and pre-leasing applications opening this month. Want me to add you to the priority waitlist?" },
+  { k: ['unit type','floor plan','bedroom','studio','layout'],
+    a: "Aria offers studio, 1-bedroom, 2-bedroom, and 2-bedroom + den layouts. Every unit includes a Lumon solarium with a retractable glass enclosure and heating — great for BC's shoulder seasons." },
+  { k: ['air condition','ac ','cooling'],
+    a: "Yes — every home at Aria comes with air conditioning, plus 9-foot ceilings, quartz countertops, wood cabinetry, and Samsung appliances." },
+  { k: ['waitlist','sign up','apply','interested','priority'],
+    a: "I can get you on the priority list right now — just share your name and email and the Diverse Properties team will follow up as floor plans and pricing are finalized." },
+  { k: ['price','rent','cost','$','pricing'],
+    a: "Pricing starts from $1,400/month for a studio, with 1, 2, and 2+den layouts available at higher tiers. Exact pricing by floor plan is being finalized ahead of the January 2027 move-in — I can notify you the moment it's locked in." },
+  { k: ['pet','dog','cat'],
+    a: "Pet policy details for Aria are being finalized alongside final pricing — I'll have a confirmed answer here as soon as Diverse Properties locks it in, and can notify you directly." },
+  { k: ['address','location','where'],
+    a: "Aria is located at 33538 Cottage Lane in Central Abbotsford, BC." },
+  { k: ['parking','storage'],
+    a: "Parking and storage details will be confirmed as part of the final leasing package — I'll flag your question to the leasing team so you get a firm answer before you apply." },
+  { k: ['tour','showing','visit'],
+    a: "Tours begin as pre-leasing opens this month. Want me to pencil you in for a priority tour slot once the schedule is live?" },
+  { k: ['amenit','gym','fitness','rooftop','lounge'],
+    a: "Aria's shared amenities include a rooftop lounge and an on-site fitness room, with more common-space details being finalized ahead of move-in." },
+  { k: ['hi','hello','hey'],
+    a: "Hi! I'm Housley, Aria's leasing assistant. Ask me about move-in dates, unit types, pricing, or anything else about the building." }
+];
+
+const WAITLIST_KEYWORDS = ['waitlist','sign up','apply','interested','priority','tour','schedule','visit','book','contact me','reach out','get in touch','follow up','call me','email me'];
+const OFF_TOPIC_REPLY = "That's beyond the context of the Aria project — I'm only able to help with questions about Aria itself, like move-in dates, unit types, pricing, amenities, or the leasing process. What would you like to know about Aria?";
+
+// Local keyword matcher — used only as a fallback if the live API call fails
+// (e.g. no ANTHROPIC_API_KEY configured yet on this Netlify site, or a network error).
+function localReply(text){
+  const lower = text.toLowerCase();
+  for(const row of KB){
+    if(row.k.some(kw => lower.includes(kw))) return row.a;
+  }
+  return OFF_TOPIC_REPLY;
+}
+
+// conversation history sent to the API for context, in Anthropic Messages format
+const history = [];
+
+async function reply(text){
+  history.push({ role: 'user', content: text });
+  try{
+    const resp = await fetch('/.netlify/functions/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ messages: history })
+    });
+    if(!resp.ok) throw new Error('bad response');
+    const data = await resp.json();
+    if(!data.reply) throw new Error('no reply');
+    history.push({ role: 'assistant', content: data.reply });
+    return data.reply;
+  } catch(err){
+    // API not reachable/configured yet — fall back to the local keyword matcher so the demo still works.
+    const fallback = localReply(text);
+    history.push({ role: 'assistant', content: fallback });
+    return fallback;
+  }
+}
+
+function maybeShowLeadForm(text){
+  const lower = text.toLowerCase();
+  if(WAITLIST_KEYWORDS.some(kw => lower.includes(kw))){
+    leadWrap.classList.remove('hidden');
+    leadWrap.scrollIntoView({behavior:'smooth', block:'nearest'});
+  }
+}
+
+function addMsg(text, who){
+  const div = document.createElement('div');
+  div.className = 'msg ' + who;
+  div.textContent = text;
+  log.appendChild(div);
+  log.scrollTop = log.scrollHeight;
+}
+
+function addTyping(){
+  const div = document.createElement('div');
+  div.className = 'msg bot typing';
+  div.id = 'typing-indicator';
+  div.textContent = 'Typing…';
+  log.appendChild(div);
+  log.scrollTop = log.scrollHeight;
+}
+function removeTyping(){
+  const el = document.getElementById('typing-indicator');
+  if(el) el.remove();
+}
+
+async function send(text){
+  if(!text.trim()) return;
+  notifyChatStarted(text);
+  addMsg(text, 'user');
+  input.value = '';
+  maybeShowLeadForm(text);
+  addTyping();
+  const answer = await reply(text);
+  removeTyping();
+  addMsg(answer, 'bot');
+  maybeShowLeadForm(answer);
+}
+
+form.addEventListener('submit', e => {
+  e.preventDefault();
+  send(input.value);
+});
+
+document.querySelectorAll('.suggest').forEach(btn => {
+  btn.addEventListener('click', () => send(btn.dataset.q));
+});
+
+leadCancel.addEventListener('click', () => {
+  leadWrap.classList.add('hidden');
+});
+
+leadForm.addEventListener('submit', e => {
+  e.preventDefault();
+  const name = document.getElementById('lead-name').value.trim();
+  const email = document.getElementById('lead-email').value.trim();
+  const phone = document.getElementById('lead-phone').value.trim();
+  const unitType = document.getElementById('lead-unit').value;
+
+  if(!name || !email || !phone || !unitType){
+    return;
+  }
+
+  const body = new URLSearchParams({
+    'form-name': 'aria-lead',
+    'name': name,
+    'email': email,
+    'phone': phone,
+    'unit_type': unitType,
+    'page': window.location.href,
+    'timestamp': new Date().toISOString()
+  });
+
+  fetch('/', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: body.toString()
+  }).catch(() => { /* fail silently — the confirmation still shows below */ });
+
+  fetch('/.netlify/functions/notify-email', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      subject: `Aria: new waitlist lead — ${name}`,
+      text: `A visitor joined the Aria priority waitlist.\n\nName: ${name}\nEmail: ${email}\nPhone: ${phone}\nUnit type: ${unitType}\nPage: ${window.location.href}\nTime: ${new Date().toString()}`
+    })
+  }).catch(() => { /* fail silently — the confirmation still shows below */ });
+
+  leadWrap.classList.add('hidden');
+  leadForm.reset();
+  addMsg(`Thanks, ${name} — you're on the priority waitlist for a ${unitType.toLowerCase()} at Aria. The Diverse Properties team will reach out at ${email} or ${phone} as soon as pricing and availability are confirmed.`, 'bot');
+});
+
+addMsg("Hi, I'm Housley — Aria's AI leasing assistant. Ask me about move-in dates, unit types, pricing, or anything else about the building.", 'bot');
+</script>
+
+</body>
+</html>
